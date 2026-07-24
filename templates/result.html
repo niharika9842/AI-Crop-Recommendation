@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Recommendation Result</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container result">
+
+        <h1>🌾 Recommended Crop</h1>
+
+        <img src="{{ url_for('static', filename='images/' ~ crop ~ '.jpg') }}"
+     alt="{{ crop }}"
+     class="result-image">
+
+        <h2>{{ crop|capitalize }}</h2>
+
+        <hr>
+
+        <h3>💊 Fertilizer : {{ info.fertilizer }}</h3>
+
+        <h3>🌦 Season : {{ info.season }}</h3>
+
+        <h3>💧 Water Requirement : {{ info.water }}</h3>
+
+        <h3>🌾 Expected Yield : {{ info.yield }}</h3>
+        <p><b>📖 Description:</b> {{ info.description }}</p>
+        <p><b>🌡 Current Temperature:</b> {{ temperature }} °C</p>
+
+        <p><b>💧 Current Humidity:</b> {{ humidity }} %</p>
+        <p><b>🌧 Current Rainfall:</b> {{ rainfall }} mm</p>
+
+        <br>
+
+        <a href="/" class="back">⬅ Back to Home</a>
+
+    </div>
+
+</body>
+
+</html>
