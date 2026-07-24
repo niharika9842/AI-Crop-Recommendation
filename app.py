@@ -276,18 +276,31 @@ def weather():
     lat = request.args.get("lat")
     lon = request.args.get("lon")
 
-    API_KEY = "58368b5fe6fb29858a451ba96c248fea"
+    url = (
+        f"https://api.openweathermap.org/data/2.5/weather"
+        f"?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+    )
 
-    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
 
-    response = requests.get(url).json()
+        return jsonify({
+            "city": data.get("name", ""),
+            "temperature": data.get("main", {}).get("temp", ""),
+            "humidity": data.get("main", {}).get("humidity", ""),
+            "rainfall": data.get("rain", {}).get("1h", 0)
+        })
 
-    return jsonify({
-        "city": response["name"],
-        "temperature": response["main"]["temp"],
-        "humidity": response["main"]["humidity"],
-        "rainfall": response.get("rain", {}).get("1h", 0)
-    })
+    except Exception as e:
+        print("Weather Error:", e)
+        return jsonify({
+            "city": "",
+            "temperature": "",
+            "humidity": "",
+            "rainfall": 0
+        })
 
 
 @app.route("/predict", methods=["POST"])
