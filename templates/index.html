@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Crop Recommendation System</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -42,59 +43,63 @@
 
             <input type="number" name="K" placeholder="Potassium (K)" required>
 
-            <label style="color:white;">📍 Current Location</label>
+            <label>📍 Current Location</label>
 
             <input
                 type="text"
                 id="location"
                 name="location"
-                placeholder="Fetching Location..."
-                readonly
-                required>
+                placeholder="Detecting location..."
+                required
+            >
 
             <input
                 type="number"
                 step="0.01"
                 id="temperature"
                 name="temperature"
-                placeholder="Temperature"
+                placeholder="Temperature (°C)"
                 readonly
-                required>
+                required
+            >
 
             <input
                 type="number"
                 step="0.01"
                 id="humidity"
                 name="humidity"
-                placeholder="Humidity"
+                placeholder="Humidity (%)"
                 readonly
-                required>
+                required
+            >
 
             <input
                 type="number"
                 step="0.01"
                 name="ph"
                 placeholder="Soil pH"
-                required>
+                required
+            >
 
             <input
                 type="number"
                 step="0.01"
                 id="rainfall"
                 name="rainfall"
-                placeholder="Rainfall"
+                placeholder="Rainfall (mm)"
                 readonly
-                required>
+                required
+            >
 
-            <label style="color:white;">🌱 Soil Type</label>
+            <label>🌱 Soil Type</label>
 
             <select name="soil" required>
                 <option value="">Select Soil Type</option>
-                <option>Black Soil</option>
-                <option>Red Soil</option>
-                <option>Alluvial Soil</option>
-                <option>Clay Soil</option>
-                <option>Sandy Soil</option>
+                <option value="Black Soil">Black Soil</option>
+                <option value="Red Soil">Red Soil</option>
+                <option value="Alluvial Soil">Alluvial Soil</option>
+                <option value="Clay Soil">Clay Soil</option>
+                <option value="Sandy Soil">Sandy Soil</option>
             </select>
 
             <button type="submit">
@@ -105,64 +110,90 @@
 
     </div>
 
-    <!-- JavaScript -->
-    <script>
-    window.onload = function () {
+<script>
 
-        if (!navigator.geolocation) {
-            alert("Geolocation is not supported by this browser.");
-            return;
+window.onload = function () {
+
+    if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+            let lat = position.coords.latitude;
+            let lon = position.coords.longitude;
+
+            console.log("Latitude:", lat);
+            console.log("Longitude:", lon);
+
+            fetch("/weather?lat=" + lat + "&lon=" + lon)
+
+            .then(function(response){
+
+                if(!response.ok){
+                    throw new Error("Weather API Error");
+                }
+
+                return response.json();
+
+            })
+
+            .then(function(data){
+
+                console.log(data);
+
+                document.getElementById("location").value =
+                    data.city || "";
+
+                document.getElementById("temperature").value =
+                    data.temperature || "";
+
+                document.getElementById("humidity").value =
+                    data.humidity || "";
+
+                document.getElementById("rainfall").value =
+                    data.rainfall || "";
+
+            })
+
+            .catch(function(error){
+
+                console.log(error);
+
+                alert("Unable to fetch weather data.");
+
+                let locationBox = document.getElementById("location");
+
+                locationBox.readOnly = false;
+                locationBox.placeholder = "Enter your location";
+                locationBox.value = "";
+
+            });
+
+        },
+
+        function(error){
+
+            console.log(error);
+
+            alert("Location permission denied.");
+
+            let locationBox = document.getElementById("location");
+
+            locationBox.readOnly = false;
+            locationBox.placeholder = "Enter your location";
+            locationBox.value = "";
+
         }
 
-        navigator.geolocation.getCurrentPosition(
+    );
 
-            function(position) {
+};
 
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-
-                console.log("Latitude:", lat);
-                console.log("Longitude:", lon);
-
-                fetch(`/weather?lat=${lat}&lon=${lon}`)
-                .then(response => response.json())
-                .then(data => {
-
-                    console.log("Weather Data:", data);
-
-                    document.getElementById("location").value =
-                        data.city || "Unknown";
-
-                    document.getElementById("temperature").value =
-                        data.temperature ?? "";
-
-                    document.getElementById("humidity").value =
-                        data.humidity ?? "";
-
-                    document.getElementById("rainfall").value =
-                        data.rainfall ?? "";
-
-                })
-                .catch(error => {
-
-                    console.error(error);
-                    alert("Unable to fetch weather data.");
-
-                });
-
-            },
-
-            function(error) {
-
-                console.error(error);
-                alert("Please allow location access.");
-
-            }
-
-        );
-
-    };
-    </script>
+</script>
 
 </body>
 </html>
