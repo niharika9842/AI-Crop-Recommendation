@@ -97,6 +97,14 @@ crop_info = {
         "yield": "1-2 Tons/Hectare",
         "description": "Coffee is a commercial plantation crop."
     }
+    "muskmelon": {
+    "image": "muskmelon.jpg",
+    "fertilizer": "NPK Fertilizer",
+    "season": "Summer",
+    "water": "Moderate",
+    "yield": "20-30 tons/hectare",
+    "description": "Muskmelon grows well in warm climate."
+}
 
 }
 
