@@ -8,7 +8,7 @@ app = Flask(__name__)
 model = joblib.load("crop_model.pkl")
 
 # OpenWeather API Key
-API_KEY = "YOUR_OPENWEATHER_API_KEY"
+API_KEY = "58368b5fe6fb29858a451ba96c248fea"
 
 
 # ---------------------------------
@@ -273,17 +273,20 @@ def contact():
 
 @app.route("/weather")
 def weather():
-
     lat = request.args.get("lat")
     lon = request.args.get("lon")
 
-    city, temperature, humidity, rainfall = get_weather(lat, lon)
+    API_KEY = "58368b5fe6fb29858a451ba96c248fea"
+
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+
+    response = requests.get(url).json()
 
     return jsonify({
-        "city": city,
-        "temperature": temperature,
-        "humidity": humidity,
-        "rainfall": rainfall
+        "city": response["name"],
+        "temperature": response["main"]["temp"],
+        "humidity": response["main"]["humidity"],
+        "rainfall": response.get("rain", {}).get("1h", 0)
     })
 
 
